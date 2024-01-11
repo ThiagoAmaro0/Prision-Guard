@@ -18,12 +18,12 @@ namespace PrisionGuard
             {
                 if (_joystick)
                 {
+                    _rb.velocity = new Vector3(_joystick.Direction.x, 0, _joystick.Direction.y) * _moveSpeed * Time.deltaTime;
+                    _animator.SetBool("Walking", _joystick.Direction != Vector2.zero);
                     if (_joystick.Direction != Vector2.zero)
                     {
-                        _rb.velocity = new Vector3(_joystick.Direction.x, 0, _joystick.Direction.y) * _moveSpeed * Time.deltaTime;
                         _animator.transform.forward = _rb.velocity.normalized;
                     }
-                    _animator.SetBool("Walking", _joystick.Direction != Vector2.zero);
                 }
                 else
                 {
