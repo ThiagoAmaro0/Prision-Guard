@@ -22,24 +22,20 @@ public class StackManager : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
-        print("Collide");
         if (_pickupLayer == (_pickupLayer | (1 << other.gameObject.layer)))
         {
-            print("Body");
-            PickableObject pickable = other.gameObject.GetComponentInParent<PickableObject>();
-            if (pickable)
+            RagdollManager ragdoll = other.gameObject.GetComponentInParent<RagdollManager>();
+            if (ragdoll)
             {
-                print("Pickable");
-                if (pickable.PickUp())
+                if (ragdoll.PickUp())
                 {
-                    print("Pick up");
-                    Add(pickable);
+                    Add(ragdoll);
                 }
             }
         }
     }
 
-    private void Add(PickableObject pickable)
+    private void Add(RagdollManager ragdoll)
     {
         StackNode node = Instantiate(_nodePrefab, new Vector3(0, _stack.Count, 0) + _stackStart.position,
                                     Quaternion.identity, _stackParent);
@@ -54,8 +50,6 @@ public class StackManager : MonoBehaviour
         node.StackStart = _stackStart;
         _stack.Add(node);
 
-        pickable.transform.parent = _stack[_stack.Count - 1].transform;
-        pickable.transform.localPosition = Vector3.zero;
-        pickable.transform.localRotation = Quaternion.identity;
+        ragdoll.ResetHips(_stack[_stack.Count - 1].transform);
     }
 }
