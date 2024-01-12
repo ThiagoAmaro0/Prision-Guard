@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -11,7 +12,21 @@ public class RagdollManager : MonoBehaviour
     private Rigidbody[] _rbs;
     private Collider[] _colliders;
     private Vector3 _rootStartPos;
+    public Action<RagdollManager> OnDisableAction;
+    public Action<RagdollManager> OnPunchAction;
 
+    private void OnEnable()
+    {
+        if (_colliders != null && _rbs != null)
+        {
+            ActiveRagdoll(false);
+        }
+    }
+
+    private void OnDisable()
+    {
+        OnDisableAction?.Invoke(this);
+    }
     private void Start()
     {
         _colliders = GetComponentsInChildren<Collider>();
@@ -24,6 +39,8 @@ public class RagdollManager : MonoBehaviour
     {
         foreach (Rigidbody rb in _rbs)
         {
+            if (!value)
+                rb.gameObject.layer = LayerMask.NameToLayer("Body");
             rb.isKinematic = !value;
         }
         foreach (Collider collider in _colliders)
@@ -38,7 +55,7 @@ public class RagdollManager : MonoBehaviour
     public void AddForce(Vector3 force)
     {
         ActiveRagdoll(true);
-        _rbs[Random.Range(0, _rbs.Length)].AddForce(force);
+        _rbs[UnityEngine.Random.Range(0, _rbs.Length)].AddForce(force);
         StartCoroutine(DelayPickup());
     }
 
@@ -46,6 +63,7 @@ public class RagdollManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1);
         _canPickup = true;
+        OnPunchAction?.Invoke(this);
     }
 
     public bool PickUp()

@@ -13,11 +13,16 @@ public class StackManager : MonoBehaviour
     [SerializeField] private float _dampingLoss = 0.2f;
     [SerializeField] private Transform _stackStart;
     [SerializeField] private Transform _stackParent;
+    [SerializeField] private Transform _idleStack;
     [SerializeField] private LayerMask _pickupLayer;
+
+    private ObjectPool<StackNode> _stackPool;
+
 
     void Start()
     {
         _stack = new List<StackNode>();
+        _stackPool = new ObjectPool<StackNode>(_nodePrefab.gameObject);
     }
 
     private void OnCollisionEnter(Collision other)
@@ -37,8 +42,10 @@ public class StackManager : MonoBehaviour
 
     private void Add(RagdollManager ragdoll)
     {
-        StackNode node = Instantiate(_nodePrefab, new Vector3(0, _stack.Count, 0) + _stackStart.position,
-                                    Quaternion.identity, _stackParent);
+        StackNode node = _stackPool.GetObject(_nodePrefab);
+        node.transform.position = new Vector3(0, _stack.Count, 0) + _stackStart.position;
+        node.transform.parent = _stackParent;
+
         if (_stack.Count > 1)
         {
             float strength = _stack[_stack.Count - 1].Strength - _stack[_stack.Count - 1].Strength * _strengthLoss;
@@ -51,5 +58,29 @@ public class StackManager : MonoBehaviour
         _stack.Add(node);
 
         ragdoll.ResetHips(_stack[_stack.Count - 1].transform);
+    }
+
+    public int Delivery()
+    {
+        if (_stack.Count > 0)
+        {
+            int count = _stack.Count;
+            ResetStack();
+            return count;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    private void ResetStack()
+    {
+        foreach (StackNode node in _stack)
+        {
+            node.gameObject.SetActive(false);
+            node.transform.parent = _idleStack;
+        }
+        _stack = new List<StackNode>();
     }
 }
