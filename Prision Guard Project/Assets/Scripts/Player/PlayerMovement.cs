@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace PrisionGuard
 {
-
     public class PlayerMovement : MonoBehaviour
     {
         [SerializeField] private float _moveSpeed = 10;

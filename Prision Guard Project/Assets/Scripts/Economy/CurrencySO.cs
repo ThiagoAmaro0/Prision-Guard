@@ -1,36 +1,38 @@
 using System;
 using UnityEngine;
-
-[CreateAssetMenu(fileName = "CurrencySO", menuName = "Prision Guard Project/CurrencySO", order = 0)]
-public class CurrencySO : ScriptableObject
+namespace PrisionGuard
 {
-    private int _value;
-    private event Action<int> onValueChange;
-
-    private void OnEnable()
+    [CreateAssetMenu(fileName = "CurrencySO", menuName = "Prision Guard Project/CurrencySO", order = 0)]
+    public class CurrencySO : ScriptableObject
     {
-        _value = 0;
-    }
+        private int _value;
+        private event Action<int> onValueChange;
 
-    public void SubscribeEvent(Action<int> function)
-    {
-        onValueChange -= function;
-        onValueChange += function;
-    }
-    public void UnsubscribeEvent(Action<int> function)
-    {
-        onValueChange -= function;
-    }
+        private void OnEnable()
+        {
+            _value = 0;
+        }
 
-    public void AddValue(int ammount)
-    {
-        _value += ammount;
-        onValueChange?.Invoke(_value);
-    }
+        public void SubscribeEvent(Action<int> function)
+        {
+            onValueChange -= function;
+            onValueChange += function;
+        }
+        public void UnsubscribeEvent(Action<int> function)
+        {
+            onValueChange -= function;
+        }
 
-    public int GetValue()
-    {
-        return _value;
-    }
+        public void AddValue(int ammount)
+        {
+            _value += ammount;
+            onValueChange?.Invoke(_value);
+        }
 
+        public int GetValue()
+        {
+            return _value;
+        }
+
+    }
 }

@@ -1,17 +1,19 @@
 using UnityEngine;
-
-public class PlayerCombat : MonoBehaviour
+namespace PrisionGuard
 {
-    [SerializeField] private float _punchForce;
-    [SerializeField] private Animator _anim;
-
-    private void OnCollisionEnter(Collision other)
+    public class PlayerCombat : MonoBehaviour
     {
-        if (other.gameObject.TryGetComponent(out RagdollManager ragdoll))
+        [SerializeField] private float _punchForce;
+        [SerializeField] private Animator _anim;
+
+        private void OnCollisionEnter(Collision other)
         {
-            Vector3 direction = (other.transform.position + Vector3.up - transform.position);
-            ragdoll.AddForce(direction.normalized * _punchForce);
-            _anim.SetTrigger("Attack");
+            if (other.gameObject.TryGetComponent(out RagdollManager ragdoll))
+            {
+                Vector3 direction = other.transform.position + Vector3.up - transform.position;
+                ragdoll.AddForce(direction.normalized * _punchForce);
+                _anim.SetTrigger("Attack");
+            }
         }
     }
 }
